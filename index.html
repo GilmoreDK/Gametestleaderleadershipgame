@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lead On — A Leadership Game in Three Phases</title>
+<title>Project Lead — A Three-Phase Leadership Simulation</title>
 <style>
 :root {
   --bg: #0f1420;
@@ -49,13 +49,23 @@ header p { color: var(--muted); margin-top: 4px; }
 .step.done .dot { background: var(--good); color: #0c1f16; border-color: var(--good); }
 #stats {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px; width: 100%; max-width: 760px; margin-bottom: 18px;
+  gap: 10px; width: 100%; max-width: 760px; margin-bottom: 14px;
 }
 .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
 .stat-head { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
 .stat-head span:last-child { color: var(--text); font-weight: 600; }
 .bar { height: 8px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
 .fill { height: 100%; border-radius: 999px; transition: width 0.35s ease; }
+#team {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px; width: 100%; max-width: 760px; margin-bottom: 14px;
+}
+.member { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.member-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.member-top b { font-size: 0.92rem; }
+.member .personality { font-size: 0.72rem; color: var(--accent-2); border: 1px solid var(--accent-2); border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+.member .need-label { font-size: 0.78rem; color: var(--muted); margin: 6px 0 4px; }
+.member .need-label b { color: var(--accent); }
 #screen { width: 100%; max-width: 760px; }
 .card {
   background: var(--panel); border: 1px solid var(--border);
@@ -64,6 +74,7 @@ header p { color: var(--muted); margin-top: 4px; }
 .card.center { text-align: center; }
 .card h2 { margin-bottom: 10px; font-size: 1.4rem; }
 .kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.75rem; margin-bottom: 8px; }
+.kicker.twist { color: var(--bad); }
 .lead { color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
 .lead b { color: var(--text); }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-bottom: 18px; }
@@ -73,9 +84,9 @@ header p { color: var(--muted); margin-top: 4px; }
 }
 .cand.picked { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .cand-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.role { font-size: 0.72rem; color: var(--accent-2); border: 1px solid var(--accent-2); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.need-tag { font-size: 0.72rem; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
 .cand p { font-size: 0.85rem; color: var(--muted); flex: 1; }
-.bonus { color: var(--good) !important; font-size: 0.78rem !important; }
+.wage { color: var(--good) !important; font-size: 0.78rem !important; }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 #pickinfo { color: var(--muted); font-size: 0.9rem; }
 .btn {
@@ -97,15 +108,13 @@ header p { color: var(--muted); margin-top: 4px; }
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 .choice:hover:not(:disabled) { border-color: var(--accent); background: #273252; }
-.choice:disabled { opacity: 0.5; cursor: not-allowed; }
 .choice small { color: var(--accent-2); font-size: 0.78rem; }
-.choice.locked small { color: var(--bad); }
 .deltas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .deltas span { border-radius: 999px; padding: 4px 12px; font-size: 0.82rem; border: 1px solid var(--border); }
 .up { color: var(--good); }
 .down { color: var(--bad); }
 .score { font-size: 1.05rem; margin-bottom: 12px; }
-.muted { color: var(--muted); font-size: 0.88rem; margin-bottom: 18px; }
+.muted { color: var(--muted); font-size: 0.88rem; margin-bottom: 8px; }
 .final-stats { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; color: var(--muted); font-size: 0.9rem; }
 .final-stats b { color: var(--text); }
 footer { margin-top: 26px; color: var(--muted); font-size: 0.8rem; text-align: center; }
@@ -113,112 +122,137 @@ footer { margin-top: 26px; color: var(--muted); font-size: 0.8rem; text-align: c
 </head>
 <body>
 <header>
-  <h1>Lead <span>On</span></h1>
-  <p>A leadership game in three phases</p>
+  <h1>Project <span>Lead</span></h1>
+  <p>A three-phase leadership simulation — inspired by the publicly described mechanics of Workz's Playmakers® (an original work, not affiliated with Workz)</p>
 </header>
 <div id="steps"></div>
 <div id="stats"></div>
+<div id="team"></div>
 <div id="screen"></div>
-<footer>Assemble your team. Lead through the crises. Leave your legacy.</footer>
+<footer>Recognise each team member's personality and need. Set shared goals. Balance the steering committee. Deliver.</footer>
 <script>
-const ROLE_NAMES = { strategist: "Strategist", diplomat: "Diplomat", fighter: "Vanguard", medic: "Medic", scout: "Scout", engineer: "Engineer" };
-const STAT_LABELS = { morale: "Morale", trust: "Trust", rep: "Reputation", budget: "Gold" };
-const STAT_COLORS = { morale: "var(--good)", trust: "var(--accent-2)", rep: "var(--accent)", budget: "var(--accent)" };
+const NEED_LABELS = { clarity: "Clarity", motivation: "Motivation", recognition: "Recognition" };
+const NEED_COLORS = { clarity: "var(--accent-2)", motivation: "var(--accent)", recognition: "var(--good)" };
+const STAT_LABELS = { budget: "Budget", morale: "Morale", trust: "Stakeholder trust", progress: "Progress" };
+const STAT_COLORS = { budget: "var(--accent)", morale: "var(--good)", trust: "var(--accent-2)", progress: "var(--bad)" };
 
 const CANDIDATES = [
-  { id: "ava", name: "Ava Storm", role: "Strategist", roleKey: "strategist", cost: 35, blurb: "Plans three moves ahead.", bonus: { trust: 4 } },
-  { id: "ben", name: "Ben Hale", role: "Diplomat", roleKey: "diplomat", cost: 30, blurb: "Turns rivals into allies.", bonus: { morale: 4 } },
-  { id: "cara", name: "Cara Vex", role: "Vanguard", roleKey: "fighter", cost: 30, blurb: "First into every battle.", bonus: { rep: 4 } },
-  { id: "dex", name: "Dex Lyn", role: "Scout", roleKey: "scout", cost: 25, blurb: "Sees what others miss.", bonus: { rep: 4 } },
-  { id: "mira", name: "Mira Quinn", role: "Medic", roleKey: "medic", cost: 25, blurb: "Keeps the team on its feet.", bonus: { morale: 4 } },
-  { id: "ola", name: "Ola Brick", role: "Engineer", roleKey: "engineer", cost: 20, blurb: "Builds what the mission needs.", bonus: { budget: 6 } }
+  { id: "sara", name: "Sara Lind", personality: "The Analyst", need: "clarity", wage: 35, blurb: "Wants precise requirements and a clear plan before she moves." },
+  { id: "milo", name: "Milo Grant", personality: "The Driver", need: "motivation", wage: 30, blurb: "Energised by ambitious goals and visible wins." },
+  { id: "ada", name: "Ada Krom", personality: "The Supporter", need: "recognition", wage: 30, blurb: "Keeps the peace on the team — if she feels valued." },
+  { id: "jonas", name: "Jonas Beck", personality: "The Innovator", need: "motivation", wage: 25, blurb: "Loves experimenting; frustrated by bureaucracy." },
+  { id: "pia", name: "Pia Holm", personality: "The Perfectionist", need: "clarity", wage: 25, blurb: "Double-checks everything; hates vague briefs." },
+  { id: "viktor", name: "Viktor Ade", personality: "The Pragmatist", need: "recognition", wage: 20, blurb: "Gets things done — and wants credit for it." }
 ];
 
-const CRISES = [
+const KICKOFF = {
+  title: "Kickoff with the steering committee",
+  text: "The committee wants the client portal 'Atlas' delivered in 12 weeks: full scope, on time, on budget. You set the shared goals for the project now.",
+  choices: [
+    { text: "Promise the full scope on time — commit fully.", fx: { trust: 10, progress: 5, morale: 4 }, result: "Bold. The committee approves — and the team believes in the ambition." },
+    { text: "Promise full scope, but negotiate a 15 budget top-up.", fx: { budget: 15, trust: 4, morale: 2 }, result: "The committee funds it. More room to breathe — if you spend it well." },
+    { text: "Set a realistic scope and negotiate more time.", fx: { trust: 6, morale: 3, progress: 2 }, result: "Honest planning calms the room. The deadline moves, the goal stays clear." }
+  ]
+};
+
+const EVENTS = [
   {
-    title: "Rumors in the tavern",
-    text: "Word spreads that your band is falling apart. The whole town is talking.",
+    twist: true,
+    title: "Surprise: the client doubles the feature list",
+    text: "Halfway through, the client sends a new requirements document — twice as long. The project's character just changed.",
     choices: [
-      { text: "Confront the rumor-mongers publicly.", role: "fighter", fx: { rep: 8, trust: -6, morale: -2 }, result: "The crowd roars your name — but some quietly wonder whether force was necessary." },
-      { text: "Set the record straight with facts, one person at a time.", role: "strategist", fx: { trust: 8, rep: 2 }, result: "Slowly, patiently, the truth wins people over." },
-      { text: "Ignore the gossip and double down on the mission.", fx: { morale: 4, rep: -6 }, result: "Your team respects your focus, but the rumors linger in the shadows." }
+      { text: "Renegotiate the scope with the steering committee.", fx: { trust: 8, progress: -6, budget: -5 }, result: "Hard negotiation, but the goal is honest again and the committee respects you." },
+      { text: "Tell the team to absorb it all — no excuses.", fx: { morale: -10, progress: 8, need: { motivation: -8 } }, result: "Progress jumps, but the team feels the squeeze." },
+      { text: "Split it: core features now, the rest in a phase two.", fx: { trust: 4, morale: 4, progress: 2, need: { clarity: 6 } }, result: "A clear split keeps everyone aligned on what 'done' means." }
     ]
   },
   {
-    title: "The treasury runs dry",
-    text: "Budget cuts are announced. One of your projects must be cancelled today.",
+    title: "Open conflict in the team",
+    text: "Two of your team members clash openly in a design review — strong personalities, different ideas, nobody backing down.",
     choices: [
-      { text: "Cancel the weakest project and protect your people.", role: "diplomat", fx: { morale: 8, trust: 4, budget: -5 }, result: "The team notices who you chose to stand behind. Loyalty deepens." },
-      { text: "Ask everyone to take a small pay cut together.", fx: { trust: 6, morale: -6, budget: 10 }, result: "Hardship shared is hardship halved — mostly." },
-      { text: "Raid the emergency reserve and keep everything running.", fx: { budget: -15, morale: 4, rep: -2 }, result: "Everything keeps moving, but the elders frown at your recklessness." }
+      { text: "Mediate and set a clear decision-making process.", fx: { morale: 4, trust: 2, need: { clarity: 10 } }, result: "A shared process turns the clash into a debate. Clarity-needy members relax." },
+      { text: "Let them resolve it themselves — it's their project.", fx: { morale: -4, trust: -2, progress: 2 }, result: "It gets solved, but the room stays tense afterwards." },
+      { text: "Back the stronger argument publicly and move on.", fx: { morale: -6, progress: 4, need: { recognition: -8 } }, result: "Fast decision — but the one who lost feels unseen." }
     ]
   },
   {
-    title: "A costly mistake",
-    text: "A teammate botches an important task in front of everyone. All eyes turn to you.",
+    title: "The brief is vague again",
+    text: "A key deliverable has no clear acceptance criteria. People are guessing what 'done' looks like.",
     choices: [
-      { text: "Forgive publicly, then coach privately.", role: "diplomat", fx: { trust: 10, morale: 4 }, result: "The mistake becomes a lesson instead of a scar. Trust grows." },
-      { text: "Punish firmly to set an example.", role: "fighter", fx: { rep: 4, trust: -8, morale: -6 }, result: "Order is restored — at the price of fear in the ranks." },
-      { text: "Absorb the blame yourself and fix the damage quietly.", role: "strategist", fx: { trust: 6, morale: 2, rep: -4 }, result: "No one loses face. The team owes you one." }
+      { text: "Rewrite the brief together with clear acceptance criteria.", fx: { progress: 4, budget: -3, need: { clarity: 14 } }, result: "Everyone can now see the finish line. Clarity-needy members thrive." },
+      { text: "Trust the team to use their judgment.", fx: { progress: -4, need: { clarity: -12 } }, result: "Autonomy sounds nice, but rework piles up later." },
+      { text: "Give ownership of the spec to the most thorough member.", fx: { progress: 2, need: { clarity: 8, recognition: 6 } }, result: "Ownership plus praise — the spec is sharp and someone feels seen." }
     ]
   },
   {
-    title: "A public challenge",
-    text: "A rival leader challenges you to a contest of skill in front of the whole town.",
+    twist: true,
+    title: "Surprise: a quiet team member",
+    text: "In standup, one of your team has gone quiet. Their last contribution went uncredited in the release notes.",
     choices: [
-      { text: "Accept — and let your Strategist plan every move.", role: "strategist", fx: { rep: 10, trust: 2, morale: 2 }, result: "You win with cleverness, not muscle. The crowd is impressed." },
-      { text: "Decline, and invest the day in training instead.", fx: { trust: 6, morale: 4, rep: -4 }, result: "You look like a leader who plays the long game." },
-      { text: "Send your Vanguard to compete in your place.", role: "fighter", fx: { rep: 6, morale: 4, trust: -4 }, result: "Your champion wins the day — but some say you hid behind them." }
+      { text: "Give them a public shout-out at the next all-hands.", fx: { morale: 6, need: { recognition: 14 } }, result: "Recognition lands loudly. Recognition-needy members light up." },
+      { text: "Acknowledge it privately in a one-on-one.", fx: { morale: 2, need: { recognition: 8 } }, result: "Quieter, but genuine. Some prefer it this way." },
+      { text: "Say nothing — the work speaks for itself.", fx: { morale: -6, need: { recognition: -12 } }, result: "The silence is heard. The room cools." }
     ]
   },
   {
-    title: "The team is exhausted",
-    text: "With the final push near, your people are running on empty.",
+    twist: true,
+    title: "Surprise: the budget is cut 20% mid-project",
+    text: "Finance announces a company-wide cut. Your project loses a fifth of its remaining budget overnight.",
     choices: [
-      { text: "Push through — the goal matters most.", fx: { rep: 8, morale: -10, trust: -4 }, result: "You win the day, but some eyes in the ranks look tired and hollow." },
-      { text: "Declare a rest day so everyone can recover.", role: "medic", fx: { morale: 10, rep: -4 }, result: "A rested team fights twice as hard when it matters." },
-      { text: "Host a small celebration of the wins so far.", role: "diplomat", fx: { morale: 8, trust: 6, budget: -5 }, result: "Laughter returns to the camp. People remember how you made them feel." }
+      { text: "Protect the team — cut external consultants instead.", fx: { budget: -20, morale: 6, progress: -4 }, result: "The team notices who you shielded. Loyalty deepens, momentum dips." },
+      { text: "Ask everyone to trim their scope to fit.", fx: { budget: -10, morale: -4, progress: -6, need: { motivation: -6 } }, result: "Shared sacrifice — but ambition-needy members deflate." },
+      { text: "Go back to the committee and negotiate it back.", fx: { budget: 10, trust: -6, morale: 2 }, result: "You win some budget back, but the committee remembers the push." }
     ]
   }
 ];
 
 const FINALE = {
-  title: "The final decision",
-  text: "The realm's fate now rests on a single decision — and everyone is watching to see what kind of leader you truly are.",
+  title: "Delivery week — the final review",
+  text: "Twelve weeks are gone. The steering committee sits across the table for the final review of Atlas. Goals were reformulated along the way; now the results are judged.",
   choices: [
-    { text: "Lead the final charge yourself.", fx: { rep: 10, morale: 6, trust: 4 }, result: "You ride at the front. Whatever happens next, it happens with you." },
-    { text: "Delegate to your team and stand behind them.", fx: { trust: 10, morale: 6, rep: 4 }, result: "You gave them the tools and the trust. Now you watch them shine." },
-    { text: "Negotiate a peaceful resolution instead.", role: "diplomat", fx: { trust: 8, rep: 6, morale: 4 }, result: "Words instead of swords. Not everyone expected it — everyone remembers it." }
+    { text: "Present the results with data and ask for sign-off.", fx: { trust: 10, progress: 10 }, result: "Facts first. The committee signs off on a project they can measure." },
+    { text: "Be honest about the compromises — and what you learned.", fx: { trust: 6, morale: 6, need: { recognition: 6 } }, result: "Vulnerability builds trust. The team hears you own the outcome." },
+    { text: "Promise a follow-up release covering the gaps.", fx: { trust: 4, budget: -8, progress: 4 }, result: "A credible path forward — at a price." }
   ]
 };
 
 const ENDINGS = [
-  { min: 240, title: "The Legendary Leader", text: "Songs are already being sung about your leadership. Morale, trust and reputation all stand tall — your name will outlive the game itself." },
-  { min: 180, title: "The Respected Leader", text: "People follow you willingly and speak well of you. A solid, honorable legacy — the kind kingdoms are built on." },
-  { min: 120, title: "The Steady Hand", text: "You kept things together when it counted, even if not every decision was popular. Leadership, at its core, is endurance." },
-  { min: 0, title: "A Leader Still Learning", text: "Every great leader starts somewhere. The team is still with you — and that is where every legend begins." }
+  { min: 320, title: "A high-performing team", text: "The project delivered on time and on budget — and the team became the benchmark the whole company copies. You recognised each person's needs and led accordingly. That is real project leadership." },
+  { min: 240, title: "Delivered — on time and on budget", text: "Atlas shipped with quality intact. The committee is happy, the client is happy, and the team is proud. Solid leadership under pressure." },
+  { min: 160, title: "Shipped, with lessons learned", text: "The project went out the door, but not without friction. Some needs went unmet and the stakeholders noticed. A leader still finding their style." },
+  { min: 0, title: "The project struggled", text: "Deadlines slipped, morale sank, and the committee lost confidence. Every great leader starts somewhere — the team is still with you." }
 ];
 
-const state = { phase: 1, budget: 100, morale: 50, trust: 50, rep: 50, team: [], crisisIndex: 0 };
+const state = {
+  phase: 1,
+  budget: 100,
+  morale: 50,
+  trust: 50,
+  progress: 10,
+  team: [],
+  eventIndex: 0
+};
 const screen = document.getElementById("screen");
 const stepsEl = document.getElementById("steps");
 const statsEl = document.getElementById("stats");
+const teamEl = document.getElementById("team");
 
 function clamp(v) { return Math.max(0, Math.min(100, v)); }
+function memberById(id) { return CANDIDATES.find(c => c.id === id); }
+function needMeter(id) { return state["meter_" + id]; }
 
-function teamRoles() {
-  return new Set(state.team.map(id => CANDIDATES.find(c => c.id === id).roleKey));
-}
-
-function applyBonus(cand, sign) {
-  Object.entries(cand.bonus).forEach(([k, v]) => {
-    if (k === "budget") state.budget = Math.max(0, state.budget + sign * v);
-    else state[k] = clamp(state[k] + sign * v);
+function applyNeed(needFx) {
+  if (!needFx) return;
+  state.team.forEach(id => {
+    const m = memberById(id);
+    if (m.need === "clarity" && needFx.clarity) state["meter_" + id] = clamp(needMeter(id) + needFx.clarity);
+    if (m.need === "motivation" && needFx.motivation) state["meter_" + id] = clamp(needMeter(id) + needFx.motivation);
+    if (m.need === "recognition" && needFx.recognition) state["meter_" + id] = clamp(needMeter(id) + needFx.recognition);
   });
 }
 
 function renderSteps() {
-  const names = ["Assemble", "Lead", "Legacy"];
+  const names = ["Kickoff", "The Shift", "Delivery"];
   stepsEl.innerHTML = names.map((n, i) => {
     const p = i + 1;
     const cls = p === state.phase ? "step active" : (p < state.phase ? "step done" : "step");
@@ -227,7 +261,7 @@ function renderSteps() {
 }
 
 function renderStats() {
-  statsEl.innerHTML = ["morale", "trust", "rep", "budget"].map(k => {
+  statsEl.innerHTML = ["budget", "morale", "trust", "progress"].map(k => {
     const v = k === "budget" ? state.budget : clamp(state[k]);
     const pct = k === "budget" ? Math.min(100, state.budget) : v;
     return `<div class="stat"><div class="stat-head"><span>${STAT_LABELS[k]}</span><span>${v}</span></div>
@@ -235,107 +269,133 @@ function renderStats() {
   }).join("");
 }
 
-function renderAll() { renderSteps(); renderStats(); }
+function renderTeam() {
+  if (!state.team.length) { teamEl.innerHTML = ""; return; }
+  teamEl.innerHTML = state.team.map(id => {
+    const m = memberById(id);
+    const meter = clamp(needMeter(id));
+    return `<div class="member">
+      <div class="member-top"><b>${m.name}</b><span class="personality">${m.personality}</span></div>
+      <div class="need-label">Needs <b>${NEED_LABELS[m.need]}</b> — <span>${meter}</span></div>
+      <div class="bar"><div class="fill" style="width:${meter}%;background:${NEED_COLORS[m.need]}"></div></div>
+    </div>`;
+  }).join("");
+}
+
+function renderAll() { renderSteps(); renderStats(); renderTeam(); }
 
 function renderAssemble() {
   state.phase = 1;
   screen.innerHTML = `
     <div class="card">
-      <p class="kicker">Phase 1 of 3</p>
-      <h2>Assemble your team</h2>
-      <p class="lead">You are the new leader of a small band with <b>${state.budget} gold</b>. Recruit <b>exactly 3</b> companions — each role unlocks special options in the crises ahead.</p>
+      <p class="kicker">Phase 1 of 3 — Kickoff</p>
+      <h2>Assemble your project team</h2>
+      <p class="lead">You are the new leader of a small team delivering the client portal <b>Atlas</b> in 12 weeks, with a budget of <b>${state.budget}</b>. Pick <b>exactly 3</b> team members. Everyone has a personality — and a core need for <b>clarity</b>, <b>motivation</b> or <b>recognition</b>. Recognise it, and respond.</p>
       <div class="grid" id="candidates"></div>
       <div class="row">
-        <span id="pickinfo">Picked ${state.team.length} / 3 — ${state.budget} gold left</span>
-        <button id="start2" class="btn primary" ${state.team.length === 3 ? "" : "disabled"}>Begin Phase 2 →</button>
+        <span id="pickinfo">Picked ${state.team.length} / 3 — budget ${state.budget}</span>
+        <button id="start2" class="btn primary" ${state.team.length === 3 ? "" : "disabled"}>Hold the kickoff meeting →</button>
       </div>
     </div>`;
   const grid = document.getElementById("candidates");
   CANDIDATES.forEach(c => {
     const picked = state.team.includes(c.id);
-    const afford = picked || c.cost <= state.budget;
-    const bonusText = Object.entries(c.bonus).map(([k, v]) => `+${v} ${STAT_LABELS[k]}`).join(", ");
+    const afford = picked || c.wage <= state.budget;
     const card = document.createElement("div");
     card.className = "cand" + (picked ? " picked" : "");
     card.innerHTML = `
-      <div class="cand-top"><b>${c.name}</b><span class="role">${c.role}</span></div>
-      <p>${c.blurb}</p>
-      <p class="bonus">Bonus: ${bonusText}</p>
+      <div class="cand-top"><b>${c.name}</b><span class="need-tag">Needs ${NEED_LABELS[c.need]}</span></div>
+      <p><i>${c.personality}</i> — ${c.blurb}</p>
+      <p class="wage">Wage: ${c.wage}</p>
       <button class="btn ${picked ? "ghost" : "small"}" ${afford ? "" : "disabled"}>
-        ${picked ? "Remove — refund " + c.cost + " gold" : "Recruit — " + c.cost + " gold"}
+        ${picked ? "Remove — refund " + c.wage : "Hire — " + c.wage}
       </button>`;
     card.querySelector("button").onclick = () => {
       if (state.team.includes(c.id)) {
         state.team = state.team.filter(id => id !== c.id);
-        applyBonus(c, -1);
+        state.budget += c.wage;
+        delete state["meter_" + c.id];
       } else {
         state.team.push(c.id);
-        applyBonus(c, 1);
+        state.budget -= c.wage;
+        state["meter_" + c.id] = 60;
       }
       renderAssemble();
       renderAll();
     };
     grid.appendChild(card);
   });
-  document.getElementById("start2").onclick = () => { state.crisisIndex = 0; renderLeadIntro(); };
+  document.getElementById("start2").onclick = () => renderEvent("kickoff");
   renderAll();
 }
 
-function renderLeadIntro() {
-  state.phase = 2;
-  screen.innerHTML = `
-    <div class="card center">
-      <p class="kicker">Phase 2 of 3</p>
-      <h2>Lead through the crises</h2>
-      <p class="lead">Five crises will test your leadership. Every choice shapes <b>Morale</b>, <b>Trust</b> and <b>Reputation</b> — and some options require a specific companion on your team.</p>
-      <button class="btn primary" id="go">Face the first crisis →</button>
-    </div>`;
-  document.getElementById("go").onclick = () => renderCrisis();
-  renderAll();
-}
-
-function renderCrisis() {
-  state.phase = 2;
-  const c = CRISES[state.crisisIndex];
-  const roles = teamRoles();
+function renderEvent(source) {
+  const data = source === "kickoff" ? KICKOFF : EVENTS[state.eventIndex];
+  state.phase = source === "kickoff" ? 1 : 2;
   screen.innerHTML = `
     <div class="card">
-      <p class="kicker">Phase 2 — Crisis ${state.crisisIndex + 1} of ${CRISES.length}</p>
-      <h2>${c.title}</h2>
-      <p class="lead">${c.text}</p>
+      <p class="kicker${data.twist ? " twist" : ""}">${source === "kickoff" ? "Phase 1 — Kickoff" : "Phase 2 — Event " + (state.eventIndex + 1) + " of " + EVENTS.length}${data.twist ? " — ⚠ unforeseen event" : ""}</p>
+      <h2>${data.title}</h2>
+      <p class="lead">${data.text}</p>
       <div class="choices" id="choices"></div>
     </div>`;
   const box = document.getElementById("choices");
-  c.choices.forEach(ch => {
-    const has = ch.role && roles.has(ch.role);
+  data.choices.forEach(ch => {
     const btn = document.createElement("button");
-    btn.className = "choice" + (ch.role && !has ? " locked" : "");
-    btn.disabled = !!(ch.role && !has);
-    btn.innerHTML = `${ch.text}${ch.role ? `<small>${has ? "Unlocked — your " + ROLE_NAMES[ch.role] + " advises this" : "Requires a " + ROLE_NAMES[ch.role] + " on your team"}</small>` : ""}`;
-    btn.onclick = () => applyChoice(ch, "crisis");
+    btn.className = "choice";
+    btn.innerHTML = `${ch.text}${ch.hint ? `<small>${ch.hint}</small>` : ""}`;
+    btn.onclick = () => applyChoice(ch, source);
     box.appendChild(btn);
   });
   renderAll();
 }
 
+function deltaChips(fx) {
+  const chips = [];
+  ["budget", "morale", "trust", "progress"].forEach(k => {
+    if (fx[k]) chips.push(`<span class="${fx[k] > 0 ? "up" : "down"}">${fx[k] > 0 ? "+" : ""}${fx[k]} ${STAT_LABELS[k]}</span>`);
+  });
+  if (fx.need) Object.entries(fx.need).forEach(([n, v]) => {
+    if (v) chips.push(`<span class="${v > 0 ? "up" : "down"}">${v > 0 ? "+" : ""}${v} ${NEED_LABELS[n]} (for ${NEED_LABELS[n]}-needy members)</span>`);
+  });
+  return chips.join("") || "No change";
+}
+
 function applyChoice(ch, source) {
-  ["morale", "trust", "rep"].forEach(k => { if (ch.fx[k]) state[k] = clamp(state[k] + ch.fx[k]); });
-  if (ch.fx.b) state.budget = Math.max(0, state.budget + ch.fx.b);
-  const deltas = Object.entries(ch.fx).filter(([, v]) => v)
-    .map(([k, v]) => `<span class="${v > 0 ? "up" : "down"}">${v > 0 ? "+" : ""}${v} ${STAT_LABELS[k]}</span>`).join("");
-  const last = source === "crisis" && state.crisisIndex + 1 >= CRISES.length;
+  ["morale", "trust", "progress"].forEach(k => { if (ch.fx[k]) state[k] = clamp(state[k] + ch.fx[k]); });
+  if (ch.fx.budget) state.budget = Math.max(0, state.budget + ch.fx.budget);
+  applyNeed(ch.fx.need);
+  const lastEvent = source === "event" && state.eventIndex + 1 >= EVENTS.length;
   screen.innerHTML = `
     <div class="card">
-      <p class="kicker">Outcome</p>
+      <p class="kicker">Consequence</p>
       <p class="lead">${ch.result}</p>
-      <p class="deltas">${deltas || "No change"}</p>
-      <button class="btn primary" id="next">${source === "finale" ? "See your legacy →" : (last ? "Enter Phase 3 →" : "Next crisis →")}</button>
+      <p class="deltas">${deltaChips(ch.fx)}</p>
+      <button class="btn primary" id="next">${
+        source === "finale" ? "See the final results →" :
+        source === "kickoff" ? "Enter Phase 2 →" :
+        lastEvent ? "Enter Phase 3 →" : "Next event →"
+      }</button>
     </div>`;
   document.getElementById("next").onclick = () => {
     if (source === "finale") renderEnding();
-    else if (last) renderFinaleIntro();
-    else { state.crisisIndex++; renderCrisis(); }
+    else if (source === "kickoff") { state.eventIndex = 0; renderPhase2Intro(); }
+    else if (lastEvent) renderFinaleIntro();
+    else { state.eventIndex++; renderEvent("event"); }
   };
+  renderAll();
+}
+
+function renderPhase2Intro() {
+  state.phase = 2;
+  screen.innerHTML = `
+    <div class="card center">
+      <p class="kicker">Phase 2 of 3</p>
+      <h2>The project shifts</h2>
+      <p class="lead">The project's character changes as progress is made. <b>Unforeseen events</b> will challenge your plans, goals get reformulated, and the steering committee is always watching. Respond to your team's individual needs — that is where leadership lives.</p>
+      <button class="btn primary" id="go">Face the first event →</button>
+    </div>`;
+  document.getElementById("go").onclick = () => renderEvent("event");
   renderAll();
 }
 
@@ -344,55 +404,41 @@ function renderFinaleIntro() {
   screen.innerHTML = `
     <div class="card center">
       <p class="kicker">Phase 3 of 3</p>
-      <h2>Legacy</h2>
-      <p class="lead">All eyes are on you. One final decision will decide how history remembers your leadership.</p>
-      <button class="btn primary" id="go">Make the final decision →</button>
+      <h2>Delivery</h2>
+      <p class="lead">The final stretch. Negotiate with the steering committee, protect your team, and deliver Atlas with quality — on time and on budget.</p>
+      <button class="btn primary" id="go">Go to the final review →</button>
     </div>`;
-  document.getElementById("go").onclick = () => renderFinale();
+  document.getElementById("go").onclick = () => renderEvent("finale");
   renderAll();
 }
 
-function renderFinale() {
-  state.phase = 3;
-  const roles = teamRoles();
-  screen.innerHTML = `
-    <div class="card">
-      <p class="kicker">Phase 3 — The finale</p>
-      <h2>${FINALE.title}</h2>
-      <p class="lead">${FINALE.text}</p>
-      <div class="choices" id="choices"></div>
-    </div>`;
-  const box = document.getElementById("choices");
-  FINALE.choices.forEach(ch => {
-    const has = ch.role && roles.has(ch.role);
-    const btn = document.createElement("button");
-    btn.className = "choice" + (ch.role && !has ? " locked" : "");
-    btn.disabled = !!(ch.role && !has);
-    btn.innerHTML = `${ch.text}${ch.role ? `<small>${has ? "Unlocked — your " + ROLE_NAMES[ch.role] + " advises this" : "Requires a " + ROLE_NAMES[ch.role] + " on your team"}</small>` : ""}`;
-    btn.onclick = () => applyChoice(ch, "finale");
-    box.appendChild(btn);
-  });
-  renderAll();
+function avgNeed() {
+  if (!state.team.length) return 0;
+  return Math.round(state.team.reduce((s, id) => s + clamp(needMeter(id)), 0) / state.team.length);
 }
 
 function renderEnding() {
   state.phase = 3;
-  const score = clamp(state.morale) + clamp(state.trust) + clamp(state.rep);
+  const need = avgNeed();
+  const score = need + clamp(state.morale) + clamp(state.trust) + clamp(state.progress);
   const end = ENDINGS.find(e => score >= e.min);
-  const teamNames = state.team.map(id => CANDIDATES.find(c => c.id === id).name).join(", ");
   screen.innerHTML = `
     <div class="card center">
-      <p class="kicker">Your legacy</p>
+      <p class="kicker">Final results</p>
       <h2>${end.title}</h2>
       <p class="lead">${end.text}</p>
-      <p class="score">Leadership score: <b>${score} / 300</b></p>
+      <p class="score">Leadership score: <b>${score} / 400</b></p>
       <div class="final-stats">
+        <span>Team needs met <b>${need}</b></span>
         <span>Morale <b>${clamp(state.morale)}</b></span>
-        <span>Trust <b>${clamp(state.trust)}</b></span>
-        <span>Reputation <b>${clamp(state.rep)}</b></span>
-        <span>Gold left <b>${state.budget}</b></span>
+        <span>Stakeholder trust <b>${clamp(state.trust)}</b></span>
+        <span>Progress <b>${clamp(state.progress)}</b></span>
+        <span>Budget left <b>${state.budget}</b></span>
       </div>
-      <p class="muted">Your team: ${teamNames}</p>
+      <div class="muted">${state.team.map(id => {
+        const m = memberById(id);
+        return `${m.name} (${m.personality}, needs ${NEED_LABELS[m.need]}): ${clamp(needMeter(id))}`;
+      }).join(" · ")}</div>
       <button class="btn primary" id="again">Play again</button>
     </div>`;
   document.getElementById("again").onclick = () => location.reload();

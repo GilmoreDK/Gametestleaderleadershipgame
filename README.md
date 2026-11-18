@@ -1,29 +1,39 @@
-# Lead On — A Leadership Game in Three Phases
+# Project Lead — A Three-Phase Leadership Simulation
 
-A simple, self-contained story/choice-based leadership game that runs entirely in the
-browser. No build step, no dependencies — just open `index.html`.
+A self-contained, browser-based leadership simulation inspired by the publicly
+described mechanics of Workz's Playmakers® business simulation (an original work —
+not affiliated with, and not copying, Workz). No build step, no dependencies — just
+open `index.html`.
 
 ## Run it
 
-Open `index.html` in any modern browser, or serve the folder locally:
+- Live: https://gilmoredk.github.io/Gametestleaderleadershipgame/ (GitHub Pages, auto-deploys from `main`)
+- Locally: open `index.html` in any modern browser, or serve the folder:
 
 ```bash
 python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
-## How to play
+## The game
 
-The game has three phases:
+You are the new leader of a small project team delivering a client portal in 12
+weeks. The game has **three phases**, like the original simulation:
 
-1. **Assemble** — You start with 100 gold. Recruit exactly 3 companions from a roster of
-   6. Each companion has a role (Strategist, Diplomat, Vanguard, Scout, Medic, Engineer)
-   that unlocks special dialogue options later, plus a small stat bonus.
-2. **Lead** — Face 5 crises. Every choice changes your **Morale**, **Trust**,
-   **Reputation**, and sometimes your **Gold**. Some choices are only available if you
-   recruited the right role in Phase 1.
-3. **Legacy** — Make one final decision, then receive your ending and leadership score
-   (Morale + Trust + Reputation, out of 300). There are 4 possible endings.
+1. **Kickoff** — Hire exactly 3 of 6 team members with your budget. Each member has a
+   **personality type** and a core **need**: *clarity*, *motivation*, or *recognition*.
+   Then hold the kickoff meeting with the **steering committee** and set shared goals.
+2. **The Shift** — Five events, including **unforeseen surprises** (scope doubling, a
+   budget cut, an uncredited team member). The project's character changes; goals get
+   reformulated. Every choice affects Budget, Morale, Stakeholder trust, Progress —
+   and the need meters of team members whose personality matches.
+3. **Delivery** — The final review with the steering committee, then your results:
+   one of 4 endings based on a leadership score (/400) built from how well you met
+   each team member's needs, morale, stakeholder trust, and progress.
+
+Core loop, as in Playmakers: make selections, experience the consequences, recognise
+individual traits, meet each member's needs, balance team needs against stakeholder
+expectations, and deliver quality on time and on budget.
 
 ## Project structure
 
@@ -32,5 +42,5 @@ index.html   # the whole game: markup, styles, and game logic in one file
 README.md    # this file
 ```
 
-Tech: vanilla HTML/CSS/JavaScript. Everything is inline in `index.html`, so the game
-also works offline by double-clicking the file.
+Tech: vanilla HTML/CSS/JavaScript, all inline in `index.html` (works offline).
+GitHub Pages serves it from `main` at the repository root.
